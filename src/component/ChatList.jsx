@@ -1,13 +1,27 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const ChatList = (props) => {
     
     const [menuOpen, setMenuOpen] = useState(false)
+    const menuRef = useRef(null)
 
     const toggleMenu = ()=>{
         setMenuOpen(!menuOpen)
     }
+
+    const handleClickOutside = (event) => {
+        if (menuRef.current && !menuRef.current.contains(event.target)) {
+            setMenuOpen(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
     
     return (<>
             {props.name}
@@ -19,11 +33,10 @@ const ChatList = (props) => {
                 </span>
             </button>
             {menuOpen && (
-                <div className="dropMenu">
+                <div ref={menuRef} className="dropMenu">
                     <ul>
-                        <li>메뉴1</li>
-                        <li>메뉴2</li>
-                        <li>메뉴3</li>
+                        <li>Rename</li>
+                        <li>Delete</li>
                     </ul>
                 </div>
             )}
