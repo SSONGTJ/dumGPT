@@ -1,9 +1,13 @@
 import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 
+//({name, renameHandler}) => {}
 const ChatList = (props) => {
     
-    const [menuOpen, setMenuOpen] = useState(false)
+    const [menuOpen, setMenuOpen] = useState(false); 
+    const [isEditing, setEditing] = useState(false);
+    const [label, setLabel] = useState(props.name);
+
     const menuRef = useRef(null)
 
     const toggleMenu = ()=>{
@@ -24,7 +28,12 @@ const ChatList = (props) => {
     }, []);
     
     return (<>
-            {props.name}
+            {!isEditing && <span>{label}, {props.id}</span>}
+            {isEditing && <input onChange={(e) => {setLabel(e.target.value)}} value={label} onBlur={() => {
+                props.renameHandler(props.id, label);
+                setEditing(false);
+            }}></input>}
+                        
             <button onClick={toggleMenu}>
                 <span>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,8 +44,13 @@ const ChatList = (props) => {
             {menuOpen && (
                 <div ref={menuRef} className="dropMenu">
                     <ul>
-                        <li>Rename</li>
-                        <li>Delete</li>
+                        <li onClick={() => {
+                            // props.renameHandler(1, "새로운 이름");
+                            setEditing(true);
+                        }}>Rename</li>
+                        <li onClick={()=>{
+                            props.deleteHandler(props.id)
+                        }}>Delete</li>
                     </ul>
                 </div>
             )}
@@ -48,6 +62,9 @@ ChatList.defaultProps = {
 }
 
 ChatList.propTypes = {
-    name: PropTypes.string.isRequired
+    id:PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    renameHandler: PropTypes.func.isRequired,
+    deleteHandler: PropTypes.func.isRequired,
 }
 export default ChatList;
