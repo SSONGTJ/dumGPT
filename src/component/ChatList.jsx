@@ -8,6 +8,10 @@ const ChatList = (props) => {
     const [isEditing, setEditing] = useState(false);
     const [label, setLabel] = useState(props.name);
 
+    useEffect(() => {
+        setLabel(props.name);
+    }, [props]);
+
     const menuRef = useRef(null)
 
     const toggleMenu = ()=>{
@@ -28,7 +32,7 @@ const ChatList = (props) => {
     }, []);
     
     return (<>
-            {!isEditing && <span>{label}, {props.id}</span>}
+            {!isEditing && <span>{label}</span>}
             {isEditing && <input onChange={(e) => {setLabel(e.target.value)}} value={label} onBlur={() => {
                 props.renameHandler(props.id, label);
                 setEditing(false);

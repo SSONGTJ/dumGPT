@@ -1,58 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ChatList from './ChatList';
+import axiosClient from './AxiosClient';
+
 
 const Navigation = () => {
-    const [chList, setChList]  = useState([
-        {
-
-            id: 1, 
-            name:'첫번째 채널'
-        },
-        {
-            id: 2, 
-            name:'두번째 채널'
-        },
-        {
-            id: 3, 
-            name:'세번째 채널'
-        },
-        {
-            id: 4, 
-            name:'네번째 채널'
-        },
-        {
-            id: 5, 
-            name:'다섯번째 채널'
-        }
-    ]);
-    const handleRenameChList = (id, newName) => {
-        const newChList = chList.map((obj) => {
-            if (obj.id !== id) {
-                return obj; 
-            }
-            return {id, name: newName};
-        }); 
-        setChList(newChList);
-    };
+    const [chList, setChList]  = useState([]);
     
-    const deleteChList = (id) => {
-        const newChList = chList.filter ((obj)=>{
-            if (obj.id !== id) {
-                return obj;
-            }
-        })
-        setChList(newChList);
+    useEffect(() => {
+        getChList();
+    }, []);
+
+    const getChList = async () => {
+        const {data} = await axiosClient.get("/practice/channel")
+        console.log(data);
+        setChList(data);
+
     }
-    console.log(chList);
+
+    const addChList = async ()=>{
+        await axiosClient.post("/practice/channel/new",{
+            channelName: "이름변경"
+        }); 
+        getChList();
+    }
+
+    const handleRenameChList = async (channelId, label) => {
+        await axiosClient.patch("/practice/channel/update",{
+            channelId:channelId,
+            channelName:label
+        })
+        getChList();
+    }
+    const deleteChList = async (channelId) => {
+        console.log('i delete ' + channelId);
+        await axiosClient.delete("/practice/channel/"+channelId+"/delete")
+        await getChList()
+    }
+
     return (
         <div className='nav'>
             <div className='addChat'>
                 <button onClick={()=>{
-                    setChList([
-                        ...chList,
-                        {id:6, name:"여섯"}]
-                        
-                    )
+                    console.log('am i working?')
+                    addChList()
                 }}>New chat</button>
             </div>
 
@@ -62,7 +52,7 @@ const Navigation = () => {
                     {chList.map((v,idx)=>{
                         return(
                             <li key={idx}>
-                                <ChatList id={v.id} name={v.name} renameHandler={handleRenameChList} deleteHandler={deleteChList}/>
+                                <ChatList id={v.channelId} name={v.channelName} renameHandler={handleRenameChList} deleteHandler={deleteChList}/>
                             </li>
                         )
                     })}
