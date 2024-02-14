@@ -1,3 +1,12 @@
+::-webkit-scrollbar {
+  width: 6px;
+  z-index:3;
+}
+::-webkit-scrollbar-thumb {
+  background-color:rgb(255, 236, 237);
+  border-radius: 2px;
+}
+
 .nav {
   display: flex;
   flex-direction: column;
@@ -6,6 +15,8 @@
   color: white;
   padding: 0 10px;
   height: 100vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 .nav .addChat {
@@ -30,6 +41,8 @@
   align-items: center;
   text-indent: 10px;
   position:relative;
+  width: 180px;
+  height:30px;
 }
 
 .nav ol li:hover {
@@ -42,18 +55,18 @@
 }
 
 .dropMenu {
-  position:absolute;
-  top:30px;
-  right: -136px;
+  /* position:absolute;
+  top:28px;
+  left:140px; */
+  position:fixed;
+  transform:translate(140px,55px);
+  z-index: 3;
   width: 170px;
   padding:2px 0;
   background-color:white;
   color:black;
-  z-index: 3;
   border-radius: 6px;
   box-shadow: 0 2px 5px rgb(197, 197, 197);
-  display: flex;
-  align-items: center;
 }
 
 .dropMenu ul {
@@ -150,8 +163,18 @@ main{
   flex-direction: column;
   justify-content: flex-start;
   padding:20px;
-  border: 1px solid #e7e7e7;
 }
-.msgBox div {
+.msgBox .wrap {
+  margin: 0 0 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.msgBox .wrap .author {
+  font-weight: bold;
   margin: 0 0 10px;
+  font-size:18px;
+}
+.msgBox .wrap .content {
+  font-size: 14px;
 }

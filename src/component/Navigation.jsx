@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import ChatList from './ChatList';
 import axiosClient from './AxiosClient';
-
+import { useNavigate } from 'react-router-dom';
 
 const Navigation = () => {
     const [chList, setChList]  = useState([]);
-    
+    const navigate = useNavigate();
+   
     useEffect(() => {
         getChList();
     }, []);
@@ -14,7 +15,6 @@ const Navigation = () => {
         const {data} = await axiosClient.get("/practice/channel")
         console.log(data);
         setChList(data);
-
     }
 
     const addChList = async ()=>{
@@ -22,6 +22,7 @@ const Navigation = () => {
             channelName: "이름변경"
         }); 
         getChList();
+
     }
 
     const handleRenameChList = async (channelId, label) => {
@@ -37,13 +38,19 @@ const Navigation = () => {
         await getChList()
     }
 
+    const handleChannelClick = (channelId) => {
+        navigate(`practice/chat?channelId=${channelId}`);
+    }
+
     return (
         <div className='nav'>
             <div className='addChat'>
                 <button onClick={()=>{
-                    console.log('am i working?')
                     addChList()
+                    handleChannelClick(chList[chList.length-1].channelId)
                 }}>New chat</button>
+
+                <button><a href="/">Home</a></button>
             </div>
 
             <div className='content'>
@@ -51,7 +58,9 @@ const Navigation = () => {
                     <ol>
                     {chList.map((v,idx)=>{
                         return(
-                            <li key={idx}>
+                            <li key={idx} onClick={ () => {
+                                handleChannelClick(v.channelId)
+                            }}>
                                 <ChatList id={v.channelId} name={v.channelName} renameHandler={handleRenameChList} deleteHandler={deleteChList}/>
                             </li>
                         )

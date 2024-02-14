@@ -1,18 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import axiosClient from './AxiosClient';
+import { useLocation } from 'react-router-dom';
 
 const ChatBody = () => {
     const [inputValue, setInputValue] = useState('')
-    const [chat, setChat] = useState([
-        {
-            user:"나",
-            logMsg:"안녕?"
-        },
-        {
-            user:"DumGPT",
-            logMsg:"몰루?"
-        },
+    const [content, setContent] = useState([])
 
-    ])
+    const msgBoxRef = useRef(null)
+
+    const location = useLocation()
+    const searchParams = new URLSearchParams(location.search)
+    const channelId = searchParams.get("channelId")
+
+    useEffect(()=>{
+        getContent()
+    }, [channelId])
+
+    const getContent = async() => {
+        const {data} = await axiosClient.get("/practice/chat?channelId="+channelId)
+        setContent(data)
+    }
 
     const textMsg = (event)=>{
         setInputValue(event.target.value);
@@ -23,30 +30,27 @@ const ChatBody = () => {
             sendMsg();
         }
     }
-    const sendMsg = ()=>{
-        setChat([
-            ...chat,
-            {
-                user: '나',
-                logMsg: inputValue
-            },
-            {
-                user:"DumGPT",
-                logMsg:"몰루?"
-            }
-        ]);
+    const sendMsg = async ()=>{
+        await axiosClient.post("/practice/channel/"+channelId+"/chat",{
+            content:inputValue 
+        })
         setInputValue("");
+        getContent()
     }
 
+    useEffect(()=>{
+        console.log("실행 됨")
+        window.scrollTo(0,0);
+    }, [channelId])
 
     return (
         <div className='chatContainer'>
             <div className="result">
-                <div className="msgBox">
-                    {chat.map((m, idx)=>
-                        <div key={idx}>
-                            <div>{m.user}</div>
-                            <div>{m.logMsg}</div>
+                <div className="msgBox" ref={msgBoxRef}>
+                    {content.map((v, idx)=>
+                        <div key={idx} className='wrap'>
+                            <div className='author'>{v.author}</div>
+                            <div className='content'>{v.content}</div>
                         </div>
                     )}
                 </div>
